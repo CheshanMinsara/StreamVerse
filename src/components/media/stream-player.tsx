@@ -19,10 +19,15 @@ interface StreamPlayerProps {
 }
 
 export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
-  let streamUrl = `https://vidsrc.cc/embed/${mediaType}?tmdb=${mediaId}`;
+  let streamUrl: string;
 
-  if (mediaType === 'tv' && season && episode) {
-    streamUrl += `&s=${season}&e=${episode}`;
+  if (mediaType === 'tv') {
+    streamUrl = `https://vidsrc.cc/embed/tv?tmdb=${mediaId}`;
+    if (season && episode) {
+      streamUrl += `&season=${season}&episode=${episode}`;
+    }
+  } else {
+    streamUrl = `https://vidsrc.cc/embed/movie?tmdb=${mediaId}`;
   }
 
   return (
