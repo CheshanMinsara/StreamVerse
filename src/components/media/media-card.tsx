@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlayCircle } from "lucide-react";
+import { PlayCircle, Star } from "lucide-react";
 import { MediaResult } from "@/lib/types";
 import { getImageUrl } from "@/lib/tmdb";
 import { motion } from "framer-motion";
@@ -37,6 +37,12 @@ export default function MediaCard({ media }: MediaCardProps) {
             ) : (
               <div className="w-full h-full bg-card flex items-center justify-center">
                   <span className="text-sm text-muted-foreground text-center p-2">No Poster Available</span>
+              </div>
+            )}
+             {media.vote_average > 0 && (
+              <div className="absolute top-2 right-2 bg-black/70 text-white text-xs font-bold py-1 px-2 rounded-full flex items-center gap-1 backdrop-blur-sm">
+                <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                <span>{media.vote_average.toFixed(1)}</span>
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

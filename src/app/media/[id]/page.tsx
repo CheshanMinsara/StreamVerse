@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import StreamPlayer from "@/components/media/stream-player";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import { getMediaDetails, getImageUrl } from "@/lib/tmdb";
 import { Media } from "@/lib/types";
+import Header from "@/components/layout/header";
 
 interface MediaPageProps {
   params: {
@@ -38,14 +39,16 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
 
   const title = media.title || media.name || 'Untitled';
   const typeLabel = searchParams.type === 'movie' ? 'Movie' : 'TV Show';
+  const releaseYear = media.release_date ? new Date(media.release_date).getFullYear() : (media.first_air_date ? new Date(media.first_air_date).getFullYear() : 'N/A');
 
   return (
     <div className="min-h-screen">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <Button asChild variant="ghost" className="mb-8">
           <Link href="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Browse
+            Back to Home
           </Link>
         </Button>
         <div className="grid md:grid-cols-3 lg:grid-cols-[1fr,2fr] gap-8 md:gap-12">
@@ -65,10 +68,24 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
             )}
           </div>
           <div className="flex flex-col">
-            <Badge variant="outline" className="w-fit mb-4">{typeLabel}</Badge>
-            <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">
+            <Badge variant="outline" className="w-fit mb-2">{typeLabel}</Badge>
+            <h1 className="font-headline text-4xl md:text-5xl font-bold">
               {title}
             </h1>
+            <div className="flex items-center gap-4 mt-2 mb-4 text-muted-foreground">
+                <span>{releaseYear}</span>
+                {media.vote_average > 0 && (
+                    <>
+                    <span>|</span>
+                    <div className="flex items-center gap-1 text-yellow-400">
+                        <Star className="h-4 w-4 fill-current"/>
+                        <span className="font-bold text-base text-foreground">{media.vote_average.toFixed(1)}</span>
+                        <span className="text-xs text-muted-foreground">/ 10</span>
+                    </div>
+                    </>
+                )}
+            </div>
+
             <p className="text-lg text-muted-foreground mb-8 max-w-prose">
               {media.overview}
             </p>

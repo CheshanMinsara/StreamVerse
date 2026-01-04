@@ -13,6 +13,8 @@ export interface MediaResult {
     backdrop_path: string;
     overview: string;
     media_type: 'movie' | 'tv';
+    vote_average: number;
+    genre_ids: number[];
 }
 
 export interface Media {
@@ -22,4 +24,8 @@ export interface Media {
     overview: string;
     poster_path: string;
     backdrop_path: string;
+    vote_average: number;
+    genres: { id: number, name: string }[];
+    release_date?: string;
+    first_air_date?: string;
 }
