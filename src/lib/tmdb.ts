@@ -1,16 +1,11 @@
 import { Media, MediaResult, PaginatedResponse } from "./types";
 
 const API_URL = "https://api.themoviedb.org/3";
+const API_KEY = "7a1625001f055f0542ebcbff45e85868";
 const IMAGE_URL = "https://image.tmdb.org/t/p/";
 
 async function fetchFromTMDB<T>(endpoint: string, cache: RequestCache = 'force-cache'): Promise<T> {
-    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-
-    if (!apiKey) {
-        throw new Error("NEXT_PUBLIC_TMDB_API_KEY is not configured. Please add it to your .env.local file.");
-    }
-    
-    const url = `${API_URL}/${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${apiKey}`;
+    const url = `${API_URL}/${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
     
     const response = await fetch(url, {
         headers: {
@@ -20,7 +15,7 @@ async function fetchFromTMDB<T>(endpoint: string, cache: RequestCache = 'force-c
     });
 
     if (!response.ok) {
-        const errorDetails = await response.json();
+        const errorDetails = await response.json().catch(() => ({})); // Catch if response is not JSON
         console.error(`Failed to fetch from TMDB: ${response.statusText}`, errorDetails);
         throw new Error(`Failed to fetch from TMDB: ${response.statusText}`);
     }
@@ -43,6 +38,7 @@ export async function getPopularTvShows(page: number = 1): Promise<PaginatedResp
 }
 
 export async function searchMedia(query: string, page: number = 1): Promise<PaginatedResponse<MediaResult>> {
+    // append_to_response to get release dates for TV shows in search results
     const data = await fetchFromTMDB<PaginatedResponse<MediaResult>>(`search/multi?query=${encodeURIComponent(query)}&page=${page}`);
     const filteredResults = data.results.filter(
         (item) => (item.media_type === "movie" || item.media_type === "tv") && item.poster_path

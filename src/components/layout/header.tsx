@@ -5,11 +5,14 @@ import { Search, Film, Tv, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Clapperboard } from 'lucide-react';
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { searchMedia } from "@/lib/tmdb";
+import { MediaResult } from "@/lib/types";
+import SearchResultsDropdown from "../search/search-results-dropdown";
 
 const navLinks = [
   { href: "/discover/movie", label: "Movies", icon: Film },
@@ -21,32 +24,53 @@ export default function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [results, setResults] = useState<MediaResult[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    // Only perform search if there is a debounced query
     if (debouncedSearchQuery) {
-      current.set("q", debouncedSearchQuery);
+      searchMedia(debouncedSearchQuery, 1).then(data => {
+        setResults(data.results.slice(0, 7)); // Limit to 7 results
+        setIsDropdownOpen(true);
+      });
     } else {
-      current.delete("q");
+      setResults([]);
+      setIsDropdownOpen(false);
     }
-    const search = current.toString();
-    const query = search ? `?${search}` : "";
-    const targetPath = debouncedSearchQuery ? `/search${query}` : (pathname === '/search' ? '/' : pathname + query);
-    
-    // Only push if the path or query is different
-    if ( (pathname + '?' + searchParams.toString()) !== (targetPath + query) ) {
-        router.push(targetPath);
-    }
+  }, [debouncedSearchQuery]);
 
-  }, [debouncedSearchQuery, router, pathname, searchParams]);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if(searchQuery.trim()){
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsDropdownOpen(false);
+    }
+  }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchRef]);
   
   useEffect(() => {
+    // Make sure to sync the search input with the URL query on navigation
     setSearchQuery(searchParams.get("q") || "");
   }, [searchParams]);
 
-  const NavLinks = () => (
+  const NavLinks = ({onLinkClick}: {onLinkClick?: () => void}) => (
     <>
       {navLinks.map((link) => {
         const isActive = pathname.startsWith(link.href);
@@ -54,7 +78,10 @@ export default function Header() {
           <Link
             key={link.href}
             href={link.href}
-            onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              onLinkClick?.();
+            }}
             className={cn(
               "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               isActive ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-secondary/50 hover:text-secondary-foreground"
@@ -84,8 +111,8 @@ export default function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <div className="w-full flex-1 md:w-auto md:flex-none">
-              <div className="relative">
+           <div className="w-full flex-1 md:w-auto md:flex-none" ref={searchRef}>
+              <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
@@ -93,8 +120,16 @@ export default function Header() {
                   className="pl-9 w-full md:w-80"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsDropdownOpen(searchQuery.length > 0 && results.length > 0)}
                 />
-              </div>
+                {isDropdownOpen && results.length > 0 && (
+                  <SearchResultsDropdown 
+                    results={results}
+                    query={searchQuery} 
+                    onClose={() => setIsDropdownOpen(false)}
+                  />
+                )}
+              </form>
           </div>
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -113,7 +148,7 @@ export default function Header() {
                      </span>
                   </Link>
                   <nav className="flex flex-col gap-2">
-                    <NavLinks />
+                    <NavLinks onLinkClick={() => setIsMobileMenuOpen(false)} />
                   </nav>
                 </div>
               </SheetContent>
