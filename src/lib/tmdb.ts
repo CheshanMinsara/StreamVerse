@@ -6,7 +6,7 @@ const API_KEY = process.env.TMDB_API_KEY;
 
 async function fetchFromTMDB<T>(endpoint: string, cache: RequestCache = 'force-cache'): Promise<T> {
     if (!API_KEY) {
-        throw new Error("TMDB_API_KEY is not configured");
+        throw new Error("TMDB_API_KEY is not configured in your .env.local file");
     }
     const url = `${API_URL}/${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
     const response = await fetch(url, { cache });
