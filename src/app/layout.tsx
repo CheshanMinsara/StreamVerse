@@ -4,11 +4,16 @@ import Header from "@/components/layout/header";
 import "./globals.css";
 import Link from "next/link";
 import { Megaphone } from "lucide-react";
+import { CastCarousel } from "@/components/media/cast-carousel";
+import { Media } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "StreamVerse",
   description: "Your universe of free movies and TV series.",
-  icons: [],
+  icons: [{
+    rel: 'icon',
+    url: `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>`
+  }],
 };
 
 export default function RootLayout({
