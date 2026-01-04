@@ -1,10 +1,10 @@
 import { Media, MediaResult, PaginatedResponse } from "./types";
 
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const API_URL = "https://api.themoviedb.org/3";
 const IMAGE_URL = "https://image.tmdb.org/t/p/";
 
 async function fetchFromTMDB<T>(endpoint: string, cache: RequestCache = 'force-cache'): Promise<T> {
+    const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
     const url = `${API_URL}/${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
     const response = await fetch(url, { cache });
     if (!response.ok) {
