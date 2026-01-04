@@ -90,7 +90,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
             <p className="text-lg text-muted-foreground mb-8 max-w-prose">
               {media.overview}
             </p>
-            <div className="mt-auto flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               {searchParams.type === 'tv' && media.seasons && (
                 <EpisodeSelector mediaId={media.id.toString()} seasons={media.seasons} title={title} />
               )}
