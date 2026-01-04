@@ -2,30 +2,34 @@ import { Media, MediaResult, PaginatedResponse } from "./types";
 
 const API_URL = "https://api.themoviedb.org/3";
 const IMAGE_URL = "https://image.tmdb.org/t/p/";
-const ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 
 async function fetchFromTMDB<T>(endpoint: string, cache: RequestCache = 'force-cache'): Promise<T> {
-    if (!ACCESS_TOKEN) {
-        throw new Error("TMDB_ACCESS_TOKEN is not configured in your .env.local file");
+    const accessToken = process.env.TMDB_ACCESS_TOKEN;
+
+    if (!accessToken) {
+        throw new Error("TMDB_ACCESS_TOKEN is not configured. Please add it to your .env.local file.");
     }
+    
     const url = `${API_URL}/${endpoint}`;
+    
     const response = await fetch(url, {
-        cache,
         headers: {
-            'Authorization': `Bearer ${ACCESS_TOKEN}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json;charset=utf-8'
-        }
+        },
+        cache: 'no-store' // Disabling cache for debugging purposes
     });
 
     if (!response.ok) {
-        console.error(`Failed to fetch from TMDB: ${response.statusText}`, await response.json());
+        const errorDetails = await response.json();
+        console.error(`Failed to fetch from TMDB: ${response.statusText}`, errorDetails);
         throw new Error(`Failed to fetch from TMDB: ${response.statusText}`);
     }
     return response.json();
 }
 
 export async function getTrending(timeWindow: 'day' | 'week' = 'week'): Promise<MediaResult[]> {
-    const data = await fetchFromTMDB<PaginatedResponse<MediaResult>>(`trending/all/${timeWindow}`, 'no-store');
+    const data = await fetchFromTMDB<PaginatedResponse<MediaResult>>(`trending/all/${timeWindow}`);
     return data.results;
 }
 
@@ -40,7 +44,7 @@ export async function getPopularTvShows(page: number = 1): Promise<PaginatedResp
 }
 
 export async function searchMedia(query: string, page: number = 1): Promise<PaginatedResponse<MediaResult>> {
-    const data = await fetchFromTMDB<PaginatedResponse<MediaResult>>(`search/multi?query=${encodeURIComponent(query)}&page=${page}`, 'no-store');
+    const data = await fetchFromTMDB<PaginatedResponse<MediaResult>>(`search/multi?query=${encodeURIComponent(query)}&page=${page}`);
     const filteredResults = data.results.filter(
         (item) => (item.media_type === "movie" || item.media_type === "tv") && item.poster_path
     );
