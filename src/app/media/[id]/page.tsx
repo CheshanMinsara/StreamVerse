@@ -55,7 +55,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
               fill
               className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-background/90 backdrop-blur-lg" />
           </>
         )}
         <div className="relative container mx-auto px-4 py-8">
@@ -104,7 +104,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
                 {media.overview}
               </p>
               
-              <div className="flex flex-col gap-4 mt-auto">
+              <div className="flex flex-col gap-4">
                 {searchParams.type === 'tv' && media.seasons && (
                   <EpisodeSelector mediaId={media.id.toString()} seasons={media.seasons} title={title} />
                 )}
