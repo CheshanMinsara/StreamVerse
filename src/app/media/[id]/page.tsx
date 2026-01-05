@@ -92,13 +92,6 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
               {media.overview}
             </p>
             
-            {media.credits && media.credits.cast.length > 0 && (
-              <div className="mb-8">
-                <h2 className="font-headline text-2xl font-bold mb-4">Cast</h2>
-                <CastCarousel cast={media.credits.cast} />
-              </div>
-            )}
-
             <div className="flex flex-col gap-4 mt-auto">
               {searchParams.type === 'tv' && media.seasons && (
                 <EpisodeSelector mediaId={media.id.toString()} seasons={media.seasons} title={title} />
@@ -109,6 +102,13 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
             </div>
           </div>
         </div>
+        
+        {media.credits && media.credits.cast.length > 0 && (
+          <div className="mt-12">
+            <h2 className="font-headline text-2xl font-bold mb-4">Cast</h2>
+            <CastCarousel cast={media.credits.cast} />
+          </div>
+        )}
       </div>
     </div>
   );
