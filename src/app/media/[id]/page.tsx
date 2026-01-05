@@ -55,7 +55,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
               fill
               className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-background/90 backdrop-blur-lg" />
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-lg" />
           </>
         )}
         <div className="relative container mx-auto px-4 py-8">
