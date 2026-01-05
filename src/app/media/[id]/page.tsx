@@ -10,6 +10,7 @@ import { Media } from "@/lib/types";
 import Header from "@/components/layout/header";
 import EpisodeSelector from "@/components/media/episode-selector";
 import { CastCarousel } from "@/components/media/cast-carousel";
+import AnimatedTagline from "@/components/media/animated-tagline";
 
 interface MediaPageProps {
   params: {
@@ -55,7 +56,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
               fill
               className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-lg" />
+            <div className="absolute inset-0 bg-background/70 backdrop-blur-lg" />
           </>
         )}
         <div className="relative container mx-auto px-4 py-8">
@@ -86,11 +87,7 @@ export default async function MediaPage({ params, searchParams }: MediaPageProps
               <h1 className="font-headline text-4xl md:text-5xl font-bold">
                 {title}
               </h1>
-              {media.tagline && (
-                <p className="text-lg text-muted-foreground italic mt-2">
-                  {media.tagline}
-                </p>
-              )}
+              {media.tagline && <AnimatedTagline tagline={media.tagline} />}
               <div className="flex items-center gap-4 mt-2 mb-4 text-muted-foreground">
                   <span>{releaseYear}</span>
                   {media.vote_average > 0 && (
