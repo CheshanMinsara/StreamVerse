@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Film, Tv, Menu, X } from "lucide-react";
+import { Search, Film, Tv, Menu, X, Megaphone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Clapperboard } from 'lucide-react';
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -110,7 +110,14 @@ export default function Header() {
           </nav>
         </div>
 
-        <div className="flex flex-1 items-center justify-end space-x-2">
+        <div className="hidden md:flex flex-1 justify-center">
+            <a href="mailto:cheshanminsara@gmail.com" className="group flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-yellow-500 group-hover:animate-pulse" />
+                <span className="text-sm font-semibold text-yellow-500/90 group-hover:text-yellow-500 transition-colors">For sale! Inquire now.</span>
+            </a>
+        </div>
+
+        <div className="flex flex-1 items-center justify-end space-x-2 md:flex-none">
            <div className="w-full flex-1 md:w-auto md:flex-none" ref={searchRef}>
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

@@ -29,10 +29,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <div className="relative flex min-h-screen w-full flex-col">
-          <div className="w-full bg-yellow-500 text-black p-3 text-center text-sm font-semibold flex items-center justify-center gap-2">
-            <Megaphone className="h-5 w-5" />
-            <span>This website is for sale! Contact cheshanminsara@gmail.com for inquiries.</span>
-          </div>
           <main className="flex-1">{children}</main>
         </div>
         <Toaster />
