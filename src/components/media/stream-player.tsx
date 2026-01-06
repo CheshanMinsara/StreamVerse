@@ -22,12 +22,12 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
   let streamUrl: string;
 
   if (mediaType === 'tv') {
-    streamUrl = `https://vidsrc.pro/embed/tv/${mediaId}`;
+    streamUrl = `https://vidsrc.to/embed/tv/${mediaId}`;
     if (season && episode) {
-      streamUrl += `/${season}-${episode}`;
+      streamUrl += `/${season}/${episode}`;
     }
   } else {
-    streamUrl = `https://vidsrc.pro/embed/movie/${mediaId}`;
+    streamUrl = `https://vidsrc.to/embed/movie/${mediaId}`;
   }
 
   return (
