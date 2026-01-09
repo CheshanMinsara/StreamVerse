@@ -22,8 +22,8 @@ interface StreamPlayerProps {
 
 export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
   let streamUrl: string;
-  const downloadSearchQuery = encodeURIComponent(title);
-  const downloadUrl = `https://www.google.com/search?q=${downloadSearchQuery}+download`;
+  const downloadSearchQuery = encodeURIComponent(`${title} download`);
+  const downloadUrl = `https://www.google.com/search?q=${downloadSearchQuery}`;
 
   if (mediaType === 'tv') {
     streamUrl = `https://vidsrc.cc/v2/embed/tv/${mediaId}`;
