@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -80,7 +81,7 @@ export default function EpisodeSelector({ mediaId, seasons, title }: EpisodeSele
               )}
           </div>
           <StreamPlayer
-            title={`${title} - S${selectedSeason} E${selectedEpisode}`}
+            title={`${title} - S${selectedSeason.toString().padStart(2, '0')}E${selectedEpisode.toString().padStart(2, '0')}`}
             mediaId={mediaId}
             mediaType="tv"
             season={selectedSeason}
