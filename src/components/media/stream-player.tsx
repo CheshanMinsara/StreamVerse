@@ -39,13 +39,13 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
     }
     if (selectedServer.url === "https://www.2embed.stream") {
         if (mediaType === 'movie') {
-            return `https://www.2embed.stream/embed/tmdb/movie?id=${mediaId}`;
+            return `https://www.2embed.stream/2embed.php?id=${mediaId}`;
         }
         if (mediaType === 'tv' && season && episode) {
-            return `https://www.2embed.stream/embed/tmdb/tv?id=${mediaId}&s=${season}&e=${episode}`;
+            return `https://www.2embed.stream/tv-2embed.php?id=${mediaId}&season=${season}&episode=${episode}`;
         }
         // Fallback for TV show without season/episode
-        return `https://www.2embed.stream/embed/tmdb/tv?id=${mediaId}`;
+        return `https://www.2embed.stream/tv-2embed.php?id=${mediaId}`;
     }
     return "";
   };
@@ -84,7 +84,6 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
                     allowFullScreen
                     referrerPolicy="origin"
                     className="w-full h-full"
-                    sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
                 ></iframe>
             ) : (
                 <div className="w-full h-full flex items-center justify-center bg-black text-white">
