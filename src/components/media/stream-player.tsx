@@ -30,15 +30,18 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
   const [selectedServer, setSelectedServer] = useState(servers[0]);
 
   const getStreamUrl = () => {
-    let url = `${selectedServer.url}/embed/${mediaType}/${mediaId}`;
-    if (mediaType === 'tv' && season && episode) {
-        if (selectedServer.url.includes('2embed')) {
-             // 2embed uses s= and e= for season and episode query params
-            url += `?s=${season}&e=${episode}`;
-        } else {
-            // vidsrc.to uses path-based season and episode
-            url += `/${season}/${episode}`;
-        }
+    let url: string;
+    if (selectedServer.url.includes('2embed')) {
+      if (mediaType === 'tv' && season && episode) {
+        url = `${selectedServer.url}/embed/tv/${mediaId}/${season}/${episode}`;
+      } else {
+        url = `${selectedServer.url}/embed/movie/${mediaId}`;
+      }
+    } else { // For vidsrc.to and any other servers
+      url = `${selectedServer.url}/embed/${mediaType}/${mediaId}`;
+      if (mediaType === 'tv' && season && episode) {
+        url += `/${season}/${episode}`;
+      }
     }
     return url;
   };
