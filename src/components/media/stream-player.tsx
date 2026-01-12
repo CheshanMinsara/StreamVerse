@@ -8,8 +8,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Play } from "lucide-react";
+import { Download, Play, Server } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface StreamPlayerProps {
   title: string;
@@ -19,24 +21,48 @@ interface StreamPlayerProps {
   episode?: number;
 }
 
-export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
-  const streamDomain = "vidsrc.to";
-  const downloadDomain = "dl.vidsrc.vip";
+const servers = [
+    { name: "Server 1", url: "https://vidsrc.to" },
+    { name: "Server 2", url: "https://www.2embed.stream" }
+];
 
-  let streamUrl: string;
+export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
+  const [selectedServer, setSelectedServer] = useState(servers[0]);
+
+  const getStreamUrl = () => {
+    if (selectedServer.url === "https://vidsrc.to") {
+      let url = `https://vidsrc.to/embed/${mediaType}/${mediaId}`;
+      if (mediaType === 'tv' && season && episode) {
+        url += `/${season}/${episode}`;
+      }
+      return url;
+    }
+    if (selectedServer.url === "https://www.2embed.stream") {
+        if (mediaType === 'movie') {
+            return `https://www.2embed.stream/embed/tmdb/movie?id=${mediaId}`;
+        }
+        if (mediaType === 'tv' && season && episode) {
+            return `https://www.2embed.stream/embed/tmdb/tv?id=${mediaId}&s=${season}&e=${episode}`;
+        }
+        // Fallback for TV show without season/episode
+        return `https://www.2embed.stream/embed/tmdb/tv?id=${mediaId}`;
+    }
+    return "";
+  };
+
+  const downloadDomain = "dl.vidsrc.vip";
   let downloadUrl: string;
 
   if (mediaType === 'tv') {
-    streamUrl = `https://${streamDomain}/embed/tv/${mediaId}`;
     downloadUrl = `https://${downloadDomain}/tv/${mediaId}`;
     if (season && episode) {
-      streamUrl += `/${season}/${episode}`;
       downloadUrl += `/${season}/${episode}`;
     }
   } else {
-    streamUrl = `https://${streamDomain}/embed/movie/${mediaId}`;
     downloadUrl = `https://${downloadDomain}/movie/${mediaId}`;
   }
+
+  const streamUrl = getStreamUrl();
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
@@ -52,13 +78,33 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
             <DialogTitle className="text-white">{title}</DialogTitle>
           </DialogHeader>
           <div className="aspect-video w-full">
-              <iframe
-                src={streamUrl}
-                allowFullScreen
-                referrerPolicy="origin"
-                className="w-full h-full"
-              ></iframe>
+            {streamUrl ? (
+                <iframe
+                    src={streamUrl}
+                    allowFullScreen
+                    referrerPolicy="origin"
+                    className="w-full h-full"
+                    sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+                ></iframe>
+            ) : (
+                <div className="w-full h-full flex items-center justify-center bg-black text-white">
+                    Select a server to play the video.
+                </div>
+            )}
           </div>
+           <div className="flex flex-wrap items-center justify-center gap-2 p-4 bg-black/50">
+                {servers.map((server) => (
+                    <Button 
+                        key={server.name}
+                        variant={selectedServer.name === server.name ? "default" : "outline"}
+                        onClick={() => setSelectedServer(server)}
+                        className={cn(selectedServer.name !== server.name && "bg-background/20 border-white/20 hover:bg-white/10 hover:text-white text-white")}
+                    >
+                        <Server className="mr-2 h-4 w-4" />
+                        {server.name}
+                    </Button>
+                ))}
+            </div>
         </DialogContent>
       </Dialog>
        <Button asChild size="lg" variant="outline" className="w-full">
