@@ -20,21 +20,21 @@ interface StreamPlayerProps {
 }
 
 export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
-  const streamDomain = "vidsrc.to/embed";
+  const streamDomain = "vidsrc.to";
   const downloadDomain = "dl.vidsrc.vip";
 
   let streamUrl: string;
   let downloadUrl: string;
 
   if (mediaType === 'tv') {
-    streamUrl = `https://${streamDomain}/tv/${mediaId}`;
+    streamUrl = `https://${streamDomain}/embed/tv/${mediaId}`;
     downloadUrl = `https://${downloadDomain}/tv/${mediaId}`;
     if (season && episode) {
       streamUrl += `/${season}/${episode}`;
       downloadUrl += `/${season}/${episode}`;
     }
   } else {
-    streamUrl = `https://${streamDomain}/movie/${mediaId}`;
+    streamUrl = `https://${streamDomain}/embed/movie/${mediaId}`;
     downloadUrl = `https://${downloadDomain}/movie/${mediaId}`;
   }
 
@@ -55,7 +55,7 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
               <iframe
                 src={streamUrl}
                 allowFullScreen
-                referrerPolicy="no-referrer-when-downgrade"
+                referrerPolicy="origin"
                 className="w-full h-full"
               ></iframe>
           </div>
