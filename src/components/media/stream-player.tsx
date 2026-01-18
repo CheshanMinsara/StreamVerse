@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -9,12 +8,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Play, Server } from "lucide-react";
+import { Clapperboard, Download, Play, Server, Terminal } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Terminal } from "lucide-react";
 
 interface StreamPlayerProps {
   title: string;
@@ -28,9 +26,11 @@ const servers = [
     { name: "Server 1", url: "https://vidfast.pro" },
     { name: "Server 2", url: "https://www.2embed.stream" }
 ];
+type ServerType = typeof servers[0];
 
 export default function StreamPlayer({ title, mediaId, mediaType, season, episode }: StreamPlayerProps) {
   const [selectedServer, setSelectedServer] = useState(servers[0]);
+  const [isSwitching, setIsSwitching] = useState(false);
 
   const getStreamUrl = () => {
     let url = selectedServer.url;
@@ -50,23 +50,29 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
     return url;
   };
 
-  const downloadDomain = "dl.vidsrc.vip";
-  let downloadUrl: string;
-
-  if (mediaType === 'tv') {
-    downloadUrl = `https://${downloadDomain}/tv/${mediaId}`;
-    if (season && episode) {
-      downloadUrl += `/${season}/${episode}`;
-    }
-  } else {
-    downloadUrl = `https://${downloadDomain}/movie/${mediaId}`;
-  }
-
   const streamUrl = getStreamUrl();
+  
+  const getDownloadUrl = () => {
+    let url = "https://vidfast.pro"
+    if (mediaType === 'movie') {
+      url += `/movie/${mediaId}`;
+    } else if (mediaType === 'tv' && season && episode) {
+      url += `/tv/${mediaId}/${season}/${episode}`;
+    }
+    return url;
+  }
+  const downloadUrl = getDownloadUrl();
+
+  const handleServerChange = (server: ServerType) => {
+    if (server.url !== selectedServer.url) {
+      setIsSwitching(true);
+      setSelectedServer(server);
+    }
+  };
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
-      <Dialog>
+      <Dialog onOpenChange={(open) => !open && setIsSwitching(false)}>
         <DialogTrigger asChild>
           <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
             <Play className="mr-2 h-5 w-5 fill-current" />
@@ -77,13 +83,21 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
           <DialogHeader className="p-4">
             <DialogTitle className="text-white">{title}</DialogTitle>
           </DialogHeader>
-          <div className="aspect-video w-full">
+          <div className="relative aspect-video w-full bg-black">
+            {isSwitching && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/80">
+                    <Clapperboard className="h-12 w-12 animate-logo-spin text-accent" />
+                    <p className="text-muted-foreground">Switching servers...</p>
+                </div>
+            )}
             {streamUrl ? (
                 <iframe
+                    key={streamUrl}
                     src={streamUrl}
+                    onLoad={() => setIsSwitching(false)}
                     allowFullScreen
                     referrerPolicy="origin"
-                    className="w-full h-full"
+                    className={cn("w-full h-full", isSwitching && "opacity-0")}
                 ></iframe>
             ) : (
                 <div className="w-full h-full flex items-center justify-center bg-black text-white p-4">
@@ -102,7 +116,8 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
                     <Button 
                         key={server.name}
                         variant={selectedServer.name === server.name ? "default" : "outline"}
-                        onClick={() => setSelectedServer(server)}
+                        onClick={() => handleServerChange(server)}
+                        disabled={isSwitching}
                         className={cn(selectedServer.name !== server.name && "bg-background/20 border-white/20 hover:bg-white/10 hover:text-white text-white")}
                     >
                         <Server className="mr-2 h-4 w-4" />
