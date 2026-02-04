@@ -24,7 +24,8 @@ interface StreamPlayerProps {
 
 const servers = [
     { name: "Server 1", url: "https://vidfast.pro" },
-    { name: "Server 2", url: "https://www.2embed.stream" }
+    { name: "Server 2", url: "https://www.2embed.stream" },
+    { name: "Server 3", url: "https://player.videasy.net" }
 ];
 type ServerType = typeof servers[0];
 
@@ -35,13 +36,13 @@ export default function StreamPlayer({ title, mediaId, mediaType, season, episod
   const getStreamUrl = () => {
     let url = selectedServer.url;
     
-    if (selectedServer.name === 'Server 1') { // vidfast.pro
+    if (selectedServer.name === 'Server 1' || selectedServer.name === 'Server 3') { // vidfast.pro, videasy.net
       if (mediaType === 'movie') {
         url += `/movie/${mediaId}`;
       } else if (mediaType === 'tv' && season && episode) {
         url += `/tv/${mediaId}/${season}/${episode}`;
       }
-    } else { // 2embed.stream
+    } else { // 2embed.stream (Server 2)
       url += `/embed/${mediaType}/${mediaId}`;
       if (mediaType === 'tv' && season && episode) {
           url += `/${season}/${episode}`;
